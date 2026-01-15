@@ -1,0 +1,64 @@
+{
+  "name": "progressive-web-app",
+  "version": "1.0.0",
+  "description": "A modern Progressive Web App with offline capabilities",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "build-sw": "node scripts/build-sw.js",
+    "generate-icons": "node scripts/generate-icons.js",
+    "test": "jest --coverage",
+    "lint": "eslint .",
+    "predeploy": "npm run build-sw",
+    "deploy": "gh-pages -d dist"
+  },
+  "keywords": [
+    "pwa",
+    "progressive-web-app",
+    "offline",
+    "service-worker",
+    "web-app"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "compression": "^1.7.4",
+    "helmet": "^7.0.0",
+    "cors": "^2.8.5",
+    "morgan": "^1.10.0",
+    "workbox-build": "^7.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "eslint": "^8.45.0",
+    "jest": "^29.6.1",
+    "pwa-asset-generator": "^6.2.0",
+    "gh-pages": "^6.0.0",
+    "webpack": "^5.88.1",
+    "webpack-cli": "^5.1.4"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/your-pwa-app.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/your-pwa-app/issues"
+  },
+  "homepage": "https://yourusername.github.io/your-pwa-app",
+  "pwa-studio": {
+    "serviceWorker": {
+      "cacheName": "pwa-cache-v1",
+      "precache": [
+        "/",
+        "/offline.html",
+        "/manifest.json"
+      ]
+    }
+  }
+}
