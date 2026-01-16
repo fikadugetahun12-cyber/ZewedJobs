@@ -1,0 +1,39 @@
+<script>
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+                console.log('SW registered:', registration);
+                
+                // Check for updates
+                registration.addEventListener('updatefound', () => {
+                    const newWorker = registration.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            // New update available
+                            showUpdateNotification();
+                        }
+                    });
+                });
+                
+                // Handle messages from SW
+                navigator.serviceWorker.addEventListener('message', event => {
+                    if (event.data.type === 'CONTENT_UPDATED') {
+                        console.log('New content available:', event.data.data);
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('SW registration failed:', error);
+            });
+    });
+}
+
+// Check for updates periodically
+setInterval(() => {
+    navigator.serviceWorker.ready.then(registration => {
+        registration.update();
+    });
+}, 60 * 60 * 1000); // Check every hour
+</script>
