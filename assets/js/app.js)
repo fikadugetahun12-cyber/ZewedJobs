@@ -342,4 +342,711 @@ function handleConnectionChange() {
     console.log(`Connection changed: ${effectiveType}, ${downlink}Mbps, ${rtt}ms`);
     
     // Adjust app behavior based on connection
-    if (effectiveType === 'slow-2
+    if (effectiveType === 'slow-2g' || effectiveType === '2g') {
+      enableLowBandwidthMode();
+    }
+  }
+}
+
+function updateOnlineStatus() {
+  if (DOM.onlineStatus) {
+    if (AppState.isOnline) {
+      DOM.onlineStatus.textContent = '✅ Online';
+      DOM.onlineStatus.className = 'status-online';
+    } else {
+      DOM.onlineStatus.textContent = '❌ Offline';
+      DOM.onlineStatus.className = 'status-offline';
+    }
+  }
+}
+
+function showOfflineMode() {
+  // Show offline indicator
+  const offlineIndicator = document.createElement('div');
+  offlineIndicator.className = 'offline-indicator';
+  offlineIndicator.innerHTML = `
+    <div class="alert alert-warning">
+      <strong>Offline Mode</strong>
+      <p>You are currently offline. Some features may be limited.</p>
+    </div>
+  `;
+  
+  DOM.mainContent.prepend(offlineIndicator);
+}
+
+function enableLowBandwidthMode() {
+  // Reduce image quality
+  document.querySelectorAll('img').forEach(img => {
+    if (img.dataset.lowres) {
+      img.src = img.dataset.lowres;
+    }
+  });
+  
+  // Disable animations
+  document.documentElement.style.setProperty('--transition-base', '0ms');
+  
+  // Show low bandwidth notification
+  showToast('Slow connection detected', 'warning');
+}
+
+// ============================================
+// INSTALLATION & PWA FEATURES
+// ============================================
+
+let deferredPrompt;
+
+function handleInstallPrompt(event) {
+  // Prevent Chrome 67 and earlier from automatically showing the prompt
+  event.preventDefault();
+  
+  // Stash the event so it can be triggered later
+  deferredPrompt = event;
+  
+  // Update UI to show install button
+  if (DOM.installButton) {
+    DOM.installButton.style.display = 'block';
+    DOM.installButton.addEventListener('click', installPWA);
+  }
+  
+  // Show install guidance
+  showToast('This app can be installed on your device', 'info');
+}
+
+function installPWA() {
+  if (!deferredPrompt) return;
+  
+  // Show the install prompt
+  deferredPrompt.prompt();
+  
+  // Wait for the user to respond to the prompt
+  deferredPrompt.userChoice.then((choiceResult) => {
+    if (choiceResult.outcome === 'accepted') {
+      console.log('User accepted the install prompt');
+      showToast('App installed successfully!', 'success');
+    } else {
+      console.log('User dismissed the install prompt');
+    }
+    
+    // Clear the saved prompt since it can't be used again
+    deferredPrompt = null;
+    
+    // Hide install button
+    if (DOM.installButton) {
+      DOM.installButton.style.display = 'none';
+    }
+  });
+}
+
+function handleAppInstalled() {
+  console.log('PWA was installed');
+  AppState.isInstalled = true;
+  
+  // Track installation
+  trackEvent('app_installed');
+  
+  // Show welcome message
+  showToast('Welcome to the app!', 'success');
+}
+
+function checkInstallStatus() {
+  // Check if app is running in standalone mode
+  if (window.matchMedia('(display-mode: standalone)').matches) {
+    AppState.isInstalled = true;
+    
+    // Hide install button
+    if (DOM.installButton) {
+      DOM.installButton.style.display = 'none';
+    }
+  }
+}
+
+// ============================================
+// NOTIFICATIONS
+// ============================================
+
+async function requestNotificationPermission() {
+  if (!('Notification' in window)) {
+    console.log('This browser does not support notifications');
+    return false;
+  }
+  
+  if (Notification.permission === 'granted') {
+    return true;
+  }
+  
+  if (Notification.permission !== 'denied') {
+    const permission = await Notification.requestPermission();
+    return permission === 'granted';
+  }
+  
+  return false;
+}
+
+function showNotification(title, options = {}) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') {
+    return;
+  }
+  
+  const notificationOptions = {
+    body: options.body || '',
+    icon: options.icon || '/assets/images/icon-192.png',
+    badge: options.badge || '/assets/images/badge-72.png',
+    tag: options.tag || 'default',
+    requireInteraction: options.requireInteraction || false,
+    silent: options.silent || false,
+    timestamp: options.timestamp || Date.now(),
+    data: options.data || {},
+    actions: options.actions || []
+  };
+  
+  const notification = new Notification(title, notificationOptions);
+  
+  // Auto-close notification after timeout
+  setTimeout(() => {
+    notification.close();
+  }, CONFIG.NOTIFICATION_TIMEOUT);
+  
+  return notification;
+}
+
+// ============================================
+// DATA MANAGEMENT
+// ============================================
+
+async function fetchData(url, options = {}) {
+  const cacheKey = `cache_${url}`;
+  const cacheTimeKey = `cache_time_${url}`;
+  
+  // Check cache first
+  if (AppState.userPreferences.offlineMode) {
+    const cachedData = await getOfflineData(cacheKey);
+    const cacheTime = await getOfflineData(cacheTimeKey);
+    
+    if (cachedData && cacheTime && (Date.now() - cacheTime < CONFIG.CACHE_DURATION)) {
+      console.log('Returning cached data for:', url);
+      return cachedData;
+    }
+  }
+  
+  // If online, fetch from network
+  if (AppState.isOnline) {
+    try {
+      const response = await fetch(url, options);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Cache the data
+      if (AppState.userPreferences.offlineMode) {
+        await saveOfflineData(cacheKey, data);
+        await saveOfflineData(cacheTimeKey, Date.now());
+      }
+      
+      return data;
+    } catch (error) {
+      console.error('Fetch failed:', error);
+      
+      // Fall back to cache even if stale
+      const cachedData = await getOfflineData(cacheKey);
+      if (cachedData) {
+        console.log('Using stale cache due to network error');
+        return cachedData;
+      }
+      
+      throw error;
+    }
+  } else {
+    // Offline - try to get from cache
+    const cachedData = await getOfflineData(cacheKey);
+    if (cachedData) {
+      console.log('Offline - returning cached data');
+      return cachedData;
+    }
+    
+    throw new Error('Offline and no cached data available');
+  }
+}
+
+async function syncData(data) {
+  if (!AppState.isOnline) {
+    return queueForSync(data);
+  }
+  
+  try {
+    const response = await fetch(`${CONFIG.API_BASE_URL}/sync`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    });
+    
+    if (!response.ok) {
+      throw new Error('Sync failed');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Sync error:', error);
+    return queueForSync(data);
+  }
+}
+
+async function processPendingSyncs() {
+  if (!AppState.isOnline || AppState.pendingSyncs.length === 0) {
+    return;
+  }
+  
+  console.log(`Processing ${AppState.pendingSyncs.length} pending syncs`);
+  
+  const successes = [];
+  const failures = [];
+  
+  for (const syncItem of AppState.pendingSyncs) {
+    try {
+      const result = await syncData(syncItem.data);
+      successes.push(syncItem);
+    } catch (error) {
+      failures.push(syncItem);
+    }
+  }
+  
+  // Update pending syncs
+  AppState.pendingSyncs = failures;
+  
+  if (successes.length > 0) {
+    showToast(`${successes.length} items synced successfully`, 'success');
+  }
+}
+
+// ============================================
+// UI COMPONENTS & UTILITIES
+// ============================================
+
+function showToast(message, type = 'info') {
+  // Create toast element
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.innerHTML = `
+    <span class="toast-icon">${getToastIcon(type)}</span>
+    <span class="toast-message">${message}</span>
+    <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+  `;
+  
+  // Add to toast container
+  let container = document.querySelector('.toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+  }
+  
+  container.appendChild(toast);
+  
+  // Auto-remove after 5 seconds
+  setTimeout(() => {
+    if (toast.parentElement) {
+      toast.remove();
+    }
+  }, 5000);
+}
+
+function getToastIcon(type) {
+  const icons = {
+    success: '✅',
+    error: '❌',
+    warning: '⚠️',
+    info: 'ℹ️'
+  };
+  
+  return icons[type] || icons.info;
+}
+
+function showLoading(show = true) {
+  AppState.loading = show;
+  
+  if (show) {
+    // Show loading indicator
+    const loadingIndicator = document.createElement('div');
+    loadingIndicator.className = 'loading-overlay';
+    loadingIndicator.innerHTML = `
+      <div class="loading-spinner"></div>
+      <p>Loading...</p>
+    `;
+    loadingIndicator.id = 'loadingIndicator';
+    document.body.appendChild(loadingIndicator);
+  } else {
+    // Remove loading indicator
+    const indicator = document.getElementById('loadingIndicator');
+    if (indicator) {
+      indicator.remove();
+    }
+  }
+}
+
+function handleVisibilityChange() {
+  if (document.hidden) {
+    // Page is hidden
+    console.log('App is in background');
+  } else {
+    // Page is visible
+    console.log('App is in foreground');
+    checkForUpdates();
+  }
+}
+
+function handleResize() {
+  // Handle responsive layout changes
+  const width = window.innerWidth;
+  
+  if (width < 768) {
+    document.body.classList.add('mobile');
+    document.body.classList.remove('tablet', 'desktop');
+  } else if (width < 1024) {
+    document.body.classList.add('tablet');
+    document.body.classList.remove('mobile', 'desktop');
+  } else {
+    document.body.classList.add('desktop');
+    document.body.classList.remove('mobile', 'tablet');
+  }
+}
+
+// ============================================
+// USER PREFERENCES
+// ============================================
+
+function loadUserPreferences() {
+  const savedPrefs = localStorage.getItem('userPreferences');
+  if (savedPrefs) {
+    try {
+      AppState.userPreferences = { ...AppState.userPreferences, ...JSON.parse(savedPrefs) };
+    } catch (error) {
+      console.error('Failed to parse user preferences:', error);
+    }
+  }
+}
+
+function saveUserPreferences() {
+  localStorage.setItem('userPreferences', JSON.stringify(AppState.userPreferences));
+}
+
+function applyUserPreferences() {
+  // Apply dark mode
+  if (AppState.userPreferences.darkMode) {
+    document.body.classList.add('dark-mode');
+  } else {
+    document.body.classList.remove('dark-mode');
+  }
+  
+  // Apply other preferences
+  if (!AppState.userPreferences.notifications) {
+    // Disable notification features
+  }
+}
+
+function updateUserPreference(key, value) {
+  AppState.userPreferences[key] = value;
+  saveUserPreferences();
+  applyUserPreferences();
+}
+
+// ============================================
+// ROUTING (Simple SPA Router)
+// ============================================
+
+function setupRouter() {
+  // Handle internal link clicks
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('a[data-internal]');
+    if (link) {
+      event.preventDefault();
+      navigateTo(link.getAttribute('href'));
+    }
+  });
+  
+  // Handle browser navigation
+  window.addEventListener('popstate', () => {
+    navigateTo(window.location.pathname, false);
+  });
+  
+  // Initial route
+  navigateTo(window.location.pathname, false);
+}
+
+function navigateTo(path, pushState = true) {
+  if (pushState) {
+    window.history.pushState(null, '', path);
+  }
+  
+  AppState.currentPage = path === '/' ? 'home' : path.substring(1);
+  
+  // Update active nav link
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === path) {
+      link.classList.add('active');
+    }
+  });
+  
+  // Load page content
+  loadPageContent(AppState.currentPage);
+}
+
+async function loadPageContent(page) {
+  showLoading(true);
+  
+  try {
+    // In a real app, this would fetch HTML/JSON for the page
+    const content = await fetchData(`/api/pages/${page}`);
+    
+    // Update main content
+    if (DOM.mainContent) {
+      DOM.mainContent.innerHTML = `
+        <div class="page-${page}">
+          <h1>${content.title || page}</h1>
+          <div class="page-content">${content.body || ''}</div>
+        </div>
+      `;
+    }
+    
+    // Track page view
+    trackPageView(page);
+  } catch (error) {
+    console.error('Failed to load page:', error);
+    showToast('Failed to load page content', 'error');
+  } finally {
+    showLoading(false);
+  }
+}
+
+// ============================================
+// UTILITY FUNCTIONS
+// ============================================
+
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+function throttle(func, limit) {
+  let inThrottle;
+  return function() {
+    const args = arguments;
+    const context = this;
+    if (!inThrottle) {
+      func.apply(context, args);
+      inThrottle = true;
+      setTimeout(() => inThrottle = false, limit);
+    }
+  };
+}
+
+function formatBytes(bytes, decimals = 2) {
+  if (bytes === 0) return '0 Bytes';
+  
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
+function formatDate(date, format = 'medium') {
+  const d = new Date(date);
+  
+  const formats = {
+    short: d.toLocaleDateString(),
+    medium: d.toLocaleDateString(undefined, { 
+      weekday: 'short', 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    }),
+    long: d.toLocaleDateString(undefined, { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    }),
+    time: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  };
+  
+  return formats[format] || d.toLocaleDateString();
+}
+
+// ============================================
+// ANALYTICS & TELEMETRY
+// ============================================
+
+function trackEvent(eventName, data = {}) {
+  const eventData = {
+    event: eventName,
+    timestamp: new Date().toISOString(),
+    appVersion: CONFIG.VERSION,
+    page: AppState.currentPage,
+    isOnline: AppState.isOnline,
+    isInstalled: AppState.isInstalled,
+    ...data
+  };
+  
+  console.log('Event tracked:', eventData);
+  
+  // Send to analytics endpoint (if online)
+  if (AppState.isOnline) {
+    navigator.sendBeacon?.('/api/analytics', JSON.stringify(eventData));
+  } else {
+    // Store offline for later sync
+    saveOfflineData(`event_${Date.now()}`, eventData);
+  }
+}
+
+function trackPageView(page) {
+  trackEvent('page_view', { page });
+}
+
+function trackError(error, context = {}) {
+  const errorData = {
+    error: error.message,
+    stack: error.stack,
+    timestamp: new Date().toISOString(),
+    ...context
+  };
+  
+  console.error('Error tracked:', errorData);
+  
+  // Send to error tracking service
+  if (AppState.isOnline) {
+    navigator.sendBeacon?.('/api/errors', JSON.stringify(errorData));
+  } else {
+    saveOfflineData(`error_${Date.now()}`, errorData);
+  }
+}
+
+// ============================================
+// PERIODIC TASKS
+// ============================================
+
+function setupPeriodicSync() {
+  // Check for updates every hour
+  setInterval(checkForUpdates, 60 * 60 * 1000);
+  
+  // Clean up old cache entries daily
+  setInterval(cleanupOldCache, 24 * 60 * 60 * 1000);
+  
+  // Sync pending data every 5 minutes if online
+  setInterval(syncPendingData, 5 * 60 * 1000);
+}
+
+function checkForUpdates() {
+  if (!AppState.isOnline) return;
+  
+  // Check for app updates
+  fetch('/version.json', { cache: 'no-store' })
+    .then(response => response.json())
+    .then(data => {
+      if (data.version !== CONFIG.VERSION) {
+        showUpdateNotification();
+      }
+    })
+    .catch(error => console.log('Version check failed:', error));
+  
+  // Check for content updates
+  sendMessageToServiceWorker({ type: 'CHECK_UPDATES' });
+}
+
+function cleanupOldCache() {
+  // Clean up IndexedDB entries older than 7 days
+  const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+  
+  const request = indexedDB.open('pwa-storage', 1);
+  
+  request.onsuccess = (event) => {
+    const db = event.target.result;
+    const transaction = db.transaction(['offlineData'], 'readwrite');
+    const store = transaction.objectStore('offlineData');
+    const index = store.index('timestamp');
+    
+    const range = IDBKeyRange.upperBound(sevenDaysAgo);
+    const request = index.openCursor(range);
+    
+    request.onsuccess = (event) => {
+      const cursor = event.target.result;
+      if (cursor) {
+        cursor.delete();
+        cursor.continue();
+      }
+    };
+  };
+}
+
+// ============================================
+// ERROR HANDLING
+// ============================================
+
+// Global error handler
+window.addEventListener('error', (event) => {
+  trackError(event.error, { type: 'global_error' });
+});
+
+// Unhandled promise rejection handler
+window.addEventListener('unhandledrejection', (event) => {
+  trackError(event.reason, { type: 'unhandled_rejection' });
+});
+
+// Network error handler
+function handleNetworkError(error) {
+  console.error('Network error:', error);
+  
+  if (!AppState.isOnline) {
+    showToast('You are offline. Changes will be saved locally.', 'warning');
+  } else {
+    showToast('Network error. Please try again.', 'error');
+  }
+  
+  trackError(error, { type: 'network_error' });
+}
+
+// ============================================
+// EXPORTS (if using modules)
+// ============================================
+
+// Export for module usage
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    CONFIG,
+    AppState,
+    initializeApp,
+    registerServiceWorker,
+    fetchData,
+    showToast,
+    trackEvent
+  };
+}
+
+// Make functions available globally
+window.App = {
+  version: CONFIG.VERSION,
+  state: AppState,
+  utils: {
+    formatDate,
+    formatBytes,
+    debounce,
+    throttle
+  },
+  showToast,
+  navigateTo,
+  updatePreference: updateUserPreference,
+  install: installPWA
+};
