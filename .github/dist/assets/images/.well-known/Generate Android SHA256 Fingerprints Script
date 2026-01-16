@@ -1,0 +1,127 @@
+// File: scripts/generate-android-keys.js
+const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
+
+function generateAssetLinks() {
+  // Replace with your actual keystore info
+  const androidConfig = {
+    packageName: 'com.example.myapp',
+    keystorePath: 'android/app/my-release-key.keystore',
+    keystorePassword: 'your_password',
+    keyAlias: 'your_key_alias',
+    keyPassword: 'your_key_password'
+  };
+  
+  // For development/testing, you can generate a debug fingerprint
+  const debugFingerprint = generateDebugFingerprint();
+  
+  const assetLinks = [
+    {
+      relation: [
+        "delegate_permission/common.handle_all_urls",
+        "delegate_permission/common.get_login_creds"
+      ],
+      target: {
+        namespace: "android_app",
+        package_name: androidConfig.packageName,
+        sha256_cert_fingerprints: [
+          debugFingerprint,
+          // Add your production fingerprint here
+          "YOUR_PRODUCTION_FINGERPRINT_HERE"
+        ]
+      }
+    }
+  ];
+  
+  // Create .well-known directory
+  const wellKnownDir = path.join('dist', '.well-known');
+  if (!fs.existsSync(wellKnownDir)) {
+    fs.mkdirSync(wellKnownDir, { recursive: true });
+  }
+  
+  // Write assetlinks.json
+  const assetLinksPath = path.join(wellKnownDir, 'assetlinks.json');
+  fs.writeFileSync(
+    assetLinksPath,
+    JSON.stringify(assetLinks, null, 2)
+  );
+  
+  console.log('✅ assetlinks.json created at:', assetLinksPath);
+  console.log('⚠️  Replace debug fingerprint with your production SHA256 fingerprint');
+  console.log('🔑 Debug fingerprint:', debugFingerprint);
+  
+  return debugFingerprint;
+}
+
+function generateDebugFingerprint() {
+  // For Android debug keystore (default location)
+  // Debug keystore password is usually 'android'
+  const debugKey = `
+    -----BEGIN CERTIFICATE-----
+    MIICUTCCAfugAwIBAgIEBeJg/zANBgkqhkiG9w0BAQUFADBKMRMwEQYDVQQDDApB
+    bmRyb2lkIERlZzEPMA0GA1UECgwGQW5kcm9pZDEQMA4GA1UECwwHU29mdHdhcmUx
+    CzAJBgNVBAYTAlVTMB4XDTE0MDExMDE3Mzg1MVoXDTM0MDExMDE3Mzg1MVowSjET
+    MBEGA1UEAwwKQW5kcm9pZCBEZWcxDzANBgNVBAoMBkFuZHJvaWQxEDAOBgNVBAsM
+    B1NvZnR3YXJlMQswCQYDVQQGEwJVUzCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkC
+    gYEA2hqoh9B6U6hG8v9pJm6p6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m6m
+    6m6m6
