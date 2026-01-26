@@ -2626,46 +2626,234 @@
                 } else if (type === 'advertise') {
                     modalBody.innerHTML = `
                         <h3>Advertise with ZewedJobs</h3>
-                        <p style="margin-bottom: 20px; color: #666;">Reach 50,000+ Ethiopian professionals. Choose your advertising package:</p>
+                        <p style="margin-bottom: 20px; color: #666;">Reach 50,000+ Ethiopian professionals. Complete the form below to advertise your business:</p>
                         
-                        <div style="background: var(--primary-light); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                            <h4 style="margin-bottom: 10px; color: var(--primary);">📢 Banner Advertising</h4>
-                            <ul style="padding-left: 20px; margin-bottom: 10px;">
-                                <li>Top banner: ETB 5,000/week</li>
-                                <li>Middle banner: ETB 3,500/week</li>
-                                <li>Sidebar banner: ETB 2,500/week</li>
-                            </ul>
+                        <div class="ad-form-steps">
+                            <div class="ad-step active" style="margin-bottom: 30px;">
+                                <h4 style="margin-bottom: 15px; color: var(--primary);">📋 Step 1: Company Information</h4>
+                                <input type="text" id="companyName" placeholder="Company Name *" required>
+                                <input type="email" id="companyEmail" placeholder="Email Address *" required>
+                                <input type="tel" id="companyPhone" placeholder="Phone Number *" required>
+                                <input type="text" id="companyWebsite" placeholder="Website (optional)">
+                            </div>
+                            
+                            <div class="ad-step" style="margin-bottom: 30px;">
+                                <h4 style="margin-bottom: 15px; color: var(--primary);">🎯 Step 2: Advertising Package</h4>
+                                <select id="adPackage" style="margin-bottom: 15px;" onchange="ZewedJobs.updateAdPrice()">
+                                    <option value="">Select Advertising Package *</option>
+                                    <option value="top-banner">📢 Top Banner - ETB 5,000/week</option>
+                                    <option value="middle-banner">📢 Middle Banner - ETB 3,500/week</option>
+                                    <option value="sidebar-banner">📢 Sidebar Banner - ETB 2,500/week</option>
+                                    <option value="basic-listing">🏢 Basic Business Listing - ETB 1,500/month</option>
+                                    <option value="premium-listing">🏢 Premium Listing - ETB 3,000/month</option>
+                                    <option value="featured-spot">🌟 Featured Spot - ETB 5,000/month</option>
+                                    <option value="job-sponsorship">💼 Job Sponsorship - ETB 2,000/job</option>
+                                    <option value="newsletter-ad">📧 Newsletter Ad - ETB 1,500/issue</option>
+                                    <option value="social-media">📱 Social Media Promotion - ETB 2,500/week</option>
+                                </select>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Duration *</label>
+                                    <select id="adDuration" style="margin-bottom: 15px;">
+                                        <option value="1">1 week</option>
+                                        <option value="2">2 weeks</option>
+                                        <option value="3">3 weeks</option>
+                                        <option value="4">4 weeks (1 month)</option>
+                                        <option value="8">8 weeks (2 months)</option>
+                                        <option value="12">12 weeks (3 months)</option>
+                                    </select>
+                                </div>
+                                
+                                <div id="adPriceDisplay" style="background: var(--primary-light); padding: 15px; border-radius: 8px; margin-bottom: 15px; display: none;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span>Estimated Cost:</span>
+                                        <span id="adPrice" style="font-weight: 800; font-size: 1.2rem; color: var(--primary);">ETB 0</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="ad-step" style="margin-bottom: 30px;">
+                                <h4 style="margin-bottom: 15px; color: var(--primary);">🎨 Step 3: Ad Creative</h4>
+                                <input type="text" id="adTitle" placeholder="Ad Title (max 50 characters) *" maxlength="50" required>
+                                <textarea id="adDescription" placeholder="Ad Description (max 200 characters) *" rows="3" maxlength="200" required></textarea>
+                                <input type="url" id="adImageUrl" placeholder="Ad Image URL (optional)">
+                                <input type="url" id="adDestinationUrl" placeholder="Destination URL (where users will click) *" required>
+                                <input type="text" id="adCallToAction" placeholder="Call to Action (e.g., 'Apply Now', 'Learn More') *" required>
+                            </div>
+                            
+                            <div class="ad-step" style="margin-bottom: 30px;">
+                                <h4 style="margin-bottom: 15px; color: var(--primary);">🎯 Step 4: Target Audience</h4>
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Target Job Categories (select up to 3)</label>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                        <label style="display: flex; align-items: center; gap: 5px;">
+                                            <input type="checkbox" name="targetCategories" value="technology"> 💻 Technology
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 5px;">
+                                            <input type="checkbox" name="targetCategories" value="healthcare"> 🏥 Healthcare
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 5px;">
+                                            <input type="checkbox" name="targetCategories" value="finance"> 💰 Finance
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 5px;">
+                                            <input type="checkbox" name="targetCategories" value="education"> 🎓 Education
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 5px;">
+                                            <input type="checkbox" name="targetCategories" value="marketing"> 📢 Marketing
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 5px;">
+                                            <input type="checkbox" name="targetCategories" value="engineering"> 🔧 Engineering
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Target Locations</label>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                        <label style="display: flex; align-items: center; gap: 5px;">
+                                            <input type="checkbox" name="targetLocations" value="addis-ababa"> Addis Ababa
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 5px;">
+                                            <input type="checkbox" name="targetLocations" value="all-ethiopia"> All Ethiopia
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 5px;">
+                                            <input type="checkbox" name="targetLocations" value="remote"> Remote
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="ad-step" style="margin-bottom: 30px;">
+                                <h4 style="margin-bottom: 15px; color: var(--primary);">💰 Step 5: Payment Information</h4>
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Preferred Payment Method *</label>
+                                    <select id="paymentMethod" style="margin-bottom: 15px;">
+                                        <option value="">Select Payment Method</option>
+                                        <option value="telebirr">📱 Telebirr</option>
+                                        <option value="cbe">🏦 CBE Birr</option>
+                                        <option value="hellocash">💳 HelloCash</option>
+                                        <option value="amole">🪪 Amole</option>
+                                        <option value="bank-transfer">🏦 Bank Transfer</option>
+                                    </select>
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Billing Contact (if different)</label>
+                                    <input type="text" id="billingContact" placeholder="Billing Contact Name">
+                                    <input type="email" id="billingEmail" placeholder="Billing Email">
+                                </div>
+                                
+                                <div style="background: var(--light); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                                    <p style="margin-bottom: 10px; font-size: 14px;">📋 <strong>Payment Instructions:</strong></p>
+                                    <ul style="padding-left: 20px; font-size: 13px; color: #666;">
+                                        <li>Submit this form to receive payment details</li>
+                                        <li>Ads go live within 24 hours of payment confirmation</li>
+                                        <li>All payments in Ethiopian Birr (ETB)</li>
+                                        <li>Invoices provided upon request</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div style="background: var(--primary-light); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                                <h4 style="margin-bottom: 10px; color: var(--primary);">📈 Advertising Benefits</h4>
+                                <ul style="padding-left: 20px; font-size: 13px; color: #666;">
+                                    <li>Reach 50,000+ active job seekers</li>
+                                    <li>Professional audience of Ethiopian professionals</li>
+                                    <li>Detailed analytics and performance reports</li>
+                                    <li>Dedicated support team</li>
+                                    <li>Flexible advertising packages</li>
+                                </ul>
+                            </div>
+                            
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                                <input type="checkbox" id="termsAgreement" required>
+                                <label for="termsAgreement" style="font-size: 14px;">
+                                    I agree to the <a href="#" style="color: var(--primary);" onclick="ZewedJobs.showTerms()">Advertising Terms</a> and understand that my ad will be reviewed before publication.
+                                </label>
+                            </div>
                         </div>
-                        
-                        <div style="background: var(--primary-light); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                            <h4 style="margin-bottom: 10px; color: var(--primary);">🏢 Featured Business Listing</h4>
-                            <ul style="padding-left: 20px; margin-bottom: 10px;">
-                                <li>Basic listing: ETB 1,500/month</li>
-                                <li>Premium listing: ETB 3,000/month</li>
-                                <li>Featured spot: ETB 5,000/month</li>
-                            </ul>
-                        </div>
-                        
-                        <input type="text" id="companyName" placeholder="Company Name" required>
-                        <input type="email" id="companyEmail" placeholder="Email Address" required>
-                        <input type="tel" id="companyPhone" placeholder="Phone Number" required>
-                        <select id="adPackage" style="margin-bottom: 20px;">
-                            <option value="">Select Advertising Package</option>
-                            <option value="top-banner">Top Banner (ETB 5,000/week)</option>
-                            <option value="middle-banner">Middle Banner (ETB 3,500/week)</option>
-                            <option value="sidebar-banner">Sidebar Banner (ETB 2,500/week)</option>
-                            <option value="basic-listing">Basic Listing (ETB 1,500/month)</option>
-                            <option value="premium-listing">Premium Listing (ETB 3,000/month)</option>
-                        </select>
                         
                         <button onclick="ZewedJobs.submitAdRequest()" class="btn btn-primary" style="width: 100%;">
                             <i class="fas fa-paper-plane"></i> Submit Advertising Request
                         </button>
                         
                         <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
-                            <p style="font-size: 12px; color: #666;">Or contact us directly:</p>
+                            <p style="font-size: 12px; color: #666;">Need help? Contact our advertising team:</p>
                             <p style="font-size: 14px; margin: 5px 0;"><i class="fas fa-phone"></i> +251 92 485 8244</p>
+                            <p style="font-size: 14px; margin: 5px 0;"><i class="fab fa-whatsapp"></i> +251 93 837 1557</p>
                             <p style="font-size: 14px; margin: 5px 0;"><i class="fas fa-envelope"></i> ads@zewedjobs.com</p>
+                        </div>
+                    `;
+                    
+                    // Initialize ad price calculation
+                    this.initAdPriceCalculator();
+                } else if (type === 'privacy') {
+                    modalBody.innerHTML = `
+                        <h3>Privacy Policy</h3>
+                        <div style="max-height: 400px; overflow-y: auto; padding-right: 10px;">
+                            <h4>1. Information We Collect</h4>
+                            <p>We collect information you provide directly to us, including name, email, phone number, resume, and job preferences.</p>
+                            
+                            <h4>2. How We Use Your Information</h4>
+                            <p>We use your information to provide job matching services, improve our platform, and communicate with you about opportunities.</p>
+                            
+                            <h4>3. Data Security</h4>
+                            <p>We implement security measures to protect your personal information from unauthorized access.</p>
+                            
+                            <h4>4. Your Rights</h4>
+                            <p>You have the right to access, correct, or delete your personal information at any time.</p>
+                        </div>
+                        <div style="text-align: center; margin-top: 20px;">
+                            <button onclick="ZewedJobs.hideModal()" class="btn btn-primary">
+                                Close
+                            </button>
+                        </div>
+                    `;
+                } else if (type === 'terms') {
+                    modalBody.innerHTML = `
+                        <h3>Terms of Service</h3>
+                        <div style="max-height: 400px; overflow-y: auto; padding-right: 10px;">
+                            <h4>1. Acceptance of Terms</h4>
+                            <p>By using ZewedJobs, you agree to these terms and conditions.</p>
+                            
+                            <h4>2. User Accounts</h4>
+                            <p>You are responsible for maintaining the confidentiality of your account credentials.</p>
+                            
+                            <h4>3. Job Postings</h4>
+                            <p>Employers must provide accurate job information and comply with Ethiopian labor laws.</p>
+                            
+                            <h4>4. Advertising Terms</h4>
+                            <p>All advertisements must comply with Ethiopian advertising regulations and our content policies.</p>
+                            
+                            <h4>5. Limitation of Liability</h4>
+                            <p>ZewedJobs is not responsible for job application outcomes or employer conduct.</p>
+                        </div>
+                        <div style="text-align: center; margin-top: 20px;">
+                            <button onclick="ZewedJobs.hideModal()" class="btn btn-primary">
+                                Close
+                            </button>
+                        </div>
+                    `;
+                } else if (type === 'cookies') {
+                    modalBody.innerHTML = `
+                        <h3>Cookie Policy</h3>
+                        <div style="max-height: 400px; overflow-y: auto; padding-right: 10px;">
+                            <h4>1. What Are Cookies</h4>
+                            <p>Cookies are small text files stored on your device when you visit our website.</p>
+                            
+                            <h4>2. How We Use Cookies</h4>
+                            <p>We use cookies to remember your preferences, analyze website traffic, and personalize your experience.</p>
+                            
+                            <h4>3. Types of Cookies</h4>
+                            <p>We use essential, functional, analytical, and advertising cookies.</p>
+                            
+                            <h4>4. Managing Cookies</h4>
+                            <p>You can control cookies through your browser settings. However, disabling cookies may affect website functionality.</p>
+                        </div>
+                        <div style="text-align: center; margin-top: 20px;">
+                            <button onclick="ZewedJobs.hideModal()" class="btn btn-primary">
+                                Close
+                            </button>
                         </div>
                     `;
                 }
@@ -2690,6 +2878,54 @@
             showForgotPassword() {
                 this.hideModal();
                 setTimeout(() => this.showModal('forgot'), 300);
+            },
+            
+            // Advertising Price Calculator
+            initAdPriceCalculator() {
+                const adPackage = document.getElementById('adPackage');
+                const adDuration = document.getElementById('adDuration');
+                const adPriceDisplay = document.getElementById('adPriceDisplay');
+                const adPrice = document.getElementById('adPrice');
+                
+                if (adPackage && adDuration && adPriceDisplay && adPrice) {
+                    const updatePrice = () => {
+                        if (adPackage.value) {
+                            adPriceDisplay.style.display = 'block';
+                            
+                            // Price mapping
+                            const prices = {
+                                'top-banner': 5000,
+                                'middle-banner': 3500,
+                                'sidebar-banner': 2500,
+                                'basic-listing': 1500,
+                                'premium-listing': 3000,
+                                'featured-spot': 5000,
+                                'job-sponsorship': 2000,
+                                'newsletter-ad': 1500,
+                                'social-media': 2500
+                            };
+                            
+                            const basePrice = prices[adPackage.value] || 0;
+                            const duration = parseInt(adDuration.value) || 1;
+                            const durationFactor = duration <= 4 ? duration : (duration / 4) * 0.9; // 10% discount for monthly packages
+                            
+                            const totalPrice = Math.round(basePrice * durationFactor);
+                            adPrice.textContent = `ETB ${totalPrice.toLocaleString()}`;
+                        } else {
+                            adPriceDisplay.style.display = 'none';
+                        }
+                    };
+                    
+                    adPackage.addEventListener('change', updatePrice);
+                    adDuration.addEventListener('change', updatePrice);
+                    
+                    // Initial calculation
+                    updatePrice();
+                }
+            },
+            
+            updateAdPrice() {
+                this.initAdPriceCalculator();
             },
             
             // Advertising System
@@ -2719,13 +2955,49 @@
             },
             
             submitAdRequest() {
+                // Collect all form data
                 const companyName = document.getElementById('companyName')?.value;
                 const companyEmail = document.getElementById('companyEmail')?.value;
                 const companyPhone = document.getElementById('companyPhone')?.value;
+                const companyWebsite = document.getElementById('companyWebsite')?.value;
                 const adPackage = document.getElementById('adPackage')?.value;
+                const adDuration = document.getElementById('adDuration')?.value;
+                const adTitle = document.getElementById('adTitle')?.value;
+                const adDescription = document.getElementById('adDescription')?.value;
+                const adImageUrl = document.getElementById('adImageUrl')?.value;
+                const adDestinationUrl = document.getElementById('adDestinationUrl')?.value;
+                const adCallToAction = document.getElementById('adCallToAction')?.value;
+                const paymentMethod = document.getElementById('paymentMethod')?.value;
+                const billingContact = document.getElementById('billingContact')?.value;
+                const billingEmail = document.getElementById('billingEmail')?.value;
+                const termsAgreement = document.getElementById('termsAgreement')?.checked;
                 
-                if (!companyName || !companyEmail || !companyPhone || !adPackage) {
-                    this.showNotification('Please fill in all fields', 'error');
+                // Collect target categories
+                const targetCategories = [];
+                document.querySelectorAll('input[name="targetCategories"]:checked').forEach(cb => {
+                    targetCategories.push(cb.value);
+                });
+                
+                // Collect target locations
+                const targetLocations = [];
+                document.querySelectorAll('input[name="targetLocations"]:checked').forEach(cb => {
+                    targetLocations.push(cb.value);
+                });
+                
+                // Validation
+                const requiredFields = [
+                    companyName, companyEmail, companyPhone, adPackage, 
+                    adTitle, adDescription, adDestinationUrl, adCallToAction,
+                    paymentMethod
+                ];
+                
+                if (requiredFields.some(field => !field)) {
+                    this.showNotification('Please fill in all required fields (*)', 'error');
+                    return;
+                }
+                
+                if (!termsAgreement) {
+                    this.showNotification('You must agree to the advertising terms', 'error');
                     return;
                 }
                 
@@ -2738,10 +3010,40 @@
                 // Simulate API call
                 setTimeout(() => {
                     this.hideModal();
-                    this.showNotification('✅ Advertising request submitted! We will contact you within 24 hours.', 'success');
+                    
+                    // Prepare ad data
+                    const adRequestData = {
+                        companyName,
+                        companyEmail,
+                        companyPhone,
+                        companyWebsite,
+                        adPackage,
+                        adDuration: `${adDuration} week${adDuration > 1 ? 's' : ''}`,
+                        adTitle,
+                        adDescription,
+                        adImageUrl,
+                        adDestinationUrl,
+                        adCallToAction,
+                        targetCategories,
+                        targetLocations,
+                        paymentMethod,
+                        billingContact,
+                        billingEmail,
+                        submittedAt: new Date().toISOString()
+                    };
+                    
+                    // Show success message with next steps
+                    this.showNotification(
+                        `✅ Advertising request submitted successfully! Our team will contact you within 24 hours at ${companyEmail}.`, 
+                        'success'
+                    );
+                    
+                    // Log the data (in real app, send to server)
+                    console.log('Ad Request Data:', adRequestData);
+                    
                     button.innerHTML = originalText;
                     button.disabled = false;
-                }, 1500);
+                }, 2000);
             },
             
             // Authentication
