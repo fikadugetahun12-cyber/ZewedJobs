@@ -19,6 +19,9 @@
     <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" href="/assets/logo-192.png">
     
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+    
     <style>
         /* ===== RESET & VARIABLES ===== */
         :root {
@@ -181,6 +184,103 @@
         
         .btn:hover {
             transform: translateY(-2px);
+        }
+        
+        /* ===== AD CONTAINER STYLES ===== */
+        .ad-container {
+            background: white;
+            border-radius: var(--radius);
+            margin: 30px auto;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 1px solid #eee;
+            max-width: 1200px;
+        }
+        
+        .ad-label {
+            display: block;
+            color: #999;
+            font-size: 12px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .ad-horizontal {
+            height: 90px;
+            width: 100%;
+            margin: 20px 0;
+        }
+        
+        .ad-square {
+            width: 300px;
+            height: 250px;
+            margin: 20px auto;
+        }
+        
+        .ad-vertical {
+            width: 160px;
+            height: 600px;
+            float: right;
+            margin: 20px 0 20px 30px;
+        }
+        
+        .ad-responsive {
+            width: 100%;
+            height: 100px;
+        }
+        
+        .section-ad {
+            background: linear-gradient(135deg, var(--primary-light), white);
+            border: 2px dashed var(--primary);
+        }
+        
+        .ad-fallback {
+            padding: 15px;
+            background: var(--light);
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        
+        .ad-fallback p {
+            margin: 10px 0;
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .ad-responsive {
+                height: 50px;
+            }
+            .ad-vertical {
+                display: none;
+            }
+            .ad-square {
+                width: 100%;
+                height: 200px;
+            }
+        }
+        
+        /* ===== SIDEBAR LAYOUT ===== */
+        .with-sidebar {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+            align-items: start;
+        }
+        
+        .sidebar {
+            position: sticky;
+            top: 100px;
+        }
+        
+        @media (max-width: 992px) {
+            .with-sidebar {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                position: static;
+            }
         }
         
         /* ===== HERO SECTION ===== */
@@ -1637,6 +1737,30 @@
         </div>
     </section>
 
+    <!-- Top Banner Ad -->
+    <div class="container">
+        <div class="ad-container section-ad">
+            <span class="ad-label">Advertisement</span>
+            <!-- Google AdSense Horizontal Banner -->
+            <ins class="adsbygoogle ad-horizontal"
+                 style="display:block"
+                 data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                 data-ad-slot="1234567890"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+            <!-- Fallback Ad -->
+            <div class="ad-fallback">
+                <p>Advertise your business to 50,000+ job seekers</p>
+                <a href="mailto:ads@zewedjobs.com" class="btn btn-outline" style="font-size: 12px; padding: 8px 15px;">
+                    Contact for Ads: ads@zewedjobs.com
+                </a>
+            </div>
+        </div>
+    </div>
+
     <!-- Featured Jobs Section -->
     <section class="featured-jobs-section">
         <div class="container">
@@ -1657,83 +1781,152 @@
         </div>
     </section>
 
+    <!-- Middle Banner Ad -->
+    <div class="container">
+        <div class="ad-container">
+            <span class="ad-label">Sponsored by Ethiopian Businesses</span>
+            <!-- Responsive Ad -->
+            <ins class="adsbygoogle ad-responsive"
+                 style="display:block"
+                 data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                 data-ad-slot="1122334455"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    </div>
+
     <!-- Featured Opportunities -->
     <section class="opportunities">
-        <div class="container">
-            <div class="section-title">
-                <h2>Featured <span>Opportunities</span></h2>
-                <p>Latest jobs, internships, and training programs</p>
+        <div class="container with-sidebar">
+            <div class="main-content">
+                <div class="section-title">
+                    <h2>Featured <span>Opportunities</span></h2>
+                    <p>Latest jobs, internships, and training programs</p>
+                </div>
+                
+                <div class="opportunities-grid">
+                    <!-- Job 1 -->
+                    <div class="opportunity-card">
+                        <div class="opportunity-badge">Job</div>
+                        <div class="opportunity-header" style="background: linear-gradient(135deg, var(--primary), #ff3366);">
+                            <div class="opportunity-icon">💼</div>
+                            <h3>Senior Software Engineer</h3>
+                            <div class="opportunity-company">Safaricom Ethiopia</div>
+                        </div>
+                        <div class="opportunity-details">
+                            <div class="opportunity-meta">
+                                <span><i class="fas fa-map-marker-alt"></i> Addis Ababa</span>
+                                <span><i class="fas fa-clock"></i> Full-time</span>
+                                <span><i class="fas fa-money-bill-wave"></i> ETB 50,000+</span>
+                            </div>
+                            <p class="opportunity-description">
+                                Looking for experienced developers with strong background in Java, Python, and cloud technologies.
+                            </p>
+                            <div class="opportunity-footer">
+                                <div class="opportunity-price">ETB 50,000+</div>
+                                <button class="btn btn-primary" onclick="applyOpportunity('Senior Software Engineer')">Apply Now</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Course 1 -->
+                    <div class="opportunity-card">
+                        <div class="opportunity-badge">Free Course</div>
+                        <div class="opportunity-header" style="background: linear-gradient(135deg, var(--teal), var(--purple));">
+                            <div class="opportunity-icon">🎓</div>
+                            <h3>Digital Marketing Mastery</h3>
+                            <div class="opportunity-company">Certificate Program</div>
+                        </div>
+                        <div class="opportunity-details">
+                            <div class="opportunity-meta">
+                                <span><i class="fas fa-user-graduate"></i> Beginner</span>
+                                <span><i class="fas fa-clock"></i> 4 Weeks</span>
+                                <span><i class="fas fa-certificate"></i> Certificate</span>
+                            </div>
+                            <p class="opportunity-description">
+                                Master digital marketing, SEO, social media, and analytics. Get certified and job-ready.
+                            </p>
+                            <div class="opportunity-footer">
+                                <div class="opportunity-price">FREE</div>
+                                <button class="btn btn-teal" onclick="enrollCourse('Digital Marketing')">Enroll Now</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Job 2 -->
+                    <div class="opportunity-card">
+                        <div class="opportunity-badge">Internship</div>
+                        <div class="opportunity-header" style="background: linear-gradient(135deg, var(--secondary), #e67e22);">
+                            <div class="opportunity-icon">👨‍💼</div>
+                            <h3>Marketing Intern</h3>
+                            <div class="opportunity-company">Ethio Telecom</div>
+                        </div>
+                        <div class="opportunity-details">
+                            <div class="opportunity-meta">
+                                <span><i class="fas fa-map-marker-alt"></i> Remote</span>
+                                <span><i class="fas fa-clock"></i> 3 Months</span>
+                                <span><i class="fas fa-money-bill-wave"></i> ETB 8,000</span>
+                            </div>
+                            <p class="opportunity-description">
+                                Paid internship for fresh graduates interested in digital marketing and brand management.
+                            </p>
+                            <div class="opportunity-footer">
+                                <div class="opportunity-price">ETB 8,000</div>
+                                <button class="btn btn-primary" onclick="applyOpportunity('Marketing Intern')">Apply Now</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Ad Card -->
+                    <div class="opportunity-card">
+                        <div class="opportunity-badge">Sponsored</div>
+                        <div class="opportunity-header" style="background: linear-gradient(135deg, #4A90E2, #357ABD);">
+                            <div class="opportunity-icon">📢</div>
+                            <h3>Advertisement</h3>
+                            <div class="opportunity-company">Your Business Here</div>
+                        </div>
+                        <div class="opportunity-details">
+                            <span class="ad-label" style="margin: 0 0 15px 0; display: block;">Advertisement</span>
+                            <!-- Square Ad -->
+                            <ins class="adsbygoogle ad-square"
+                                 style="display:block"
+                                 data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                                 data-ad-slot="0987654321"></ins>
+                            <script>
+                                 (adsbygoogle = window.adsbygoogle || []).push({});
+                            </script>
+                            <p style="font-size: 12px; color: #666; margin-top: 10px; text-align: center;">
+                                Reach 50,000+ Ethiopian professionals
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
             
-            <div class="opportunities-grid">
-                <!-- Job 1 -->
-                <div class="opportunity-card">
-                    <div class="opportunity-badge">Job</div>
-                    <div class="opportunity-header" style="background: linear-gradient(135deg, var(--primary), #ff3366);">
-                        <div class="opportunity-icon">💼</div>
-                        <h3>Senior Software Engineer</h3>
-                        <div class="opportunity-company">Safaricom Ethiopia</div>
-                    </div>
-                    <div class="opportunity-details">
-                        <div class="opportunity-meta">
-                            <span><i class="fas fa-map-marker-alt"></i> Addis Ababa</span>
-                            <span><i class="fas fa-clock"></i> Full-time</span>
-                            <span><i class="fas fa-money-bill-wave"></i> ETB 50,000+</span>
-                        </div>
-                        <p class="opportunity-description">
-                            Looking for experienced developers with strong background in Java, Python, and cloud technologies.
-                        </p>
-                        <div class="opportunity-footer">
-                            <div class="opportunity-price">ETB 50,000+</div>
-                            <button class="btn btn-primary" onclick="applyOpportunity('Senior Software Engineer')">Apply Now</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Course 1 -->
-                <div class="opportunity-card">
-                    <div class="opportunity-badge">Free Course</div>
-                    <div class="opportunity-header" style="background: linear-gradient(135deg, var(--teal), var(--purple));">
-                        <div class="opportunity-icon">🎓</div>
-                        <h3>Digital Marketing Mastery</h3>
-                        <div class="opportunity-company">Certificate Program</div>
-                    </div>
-                    <div class="opportunity-details">
-                        <div class="opportunity-meta">
-                            <span><i class="fas fa-user-graduate"></i> Beginner</span>
-                            <span><i class="fas fa-clock"></i> 4 Weeks</span>
-                            <span><i class="fas fa-certificate"></i> Certificate</span>
-                        </div>
-                        <p class="opportunity-description">
-                            Master digital marketing, SEO, social media, and analytics. Get certified and job-ready.
-                        </p>
-                        <div class="opportunity-footer">
-                            <div class="opportunity-price">FREE</div>
-                            <button class="btn btn-teal" onclick="enrollCourse('Digital Marketing')">Enroll Now</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Job 2 -->
-                <div class="opportunity-card">
-                    <div class="opportunity-badge">Internship</div>
-                    <div class="opportunity-header" style="background: linear-gradient(135deg, var(--secondary), #e67e22);">
-                        <div class="opportunity-icon">👨‍💼</div>
-                        <h3>Marketing Intern</h3>
-                        <div class="opportunity-company">Ethio Telecom</div>
-                    </div>
-                    <div class="opportunity-details">
-                        <div class="opportunity-meta">
-                            <span><i class="fas fa-map-marker-alt"></i> Remote</span>
-                            <span><i class="fas fa-clock"></i> 3 Months</span>
-                            <span><i class="fas fa-money-bill-wave"></i> ETB 8,000</span>
-                        </div>
-                        <p class="opportunity-description">
-                            Paid internship for fresh graduates interested in digital marketing and brand management.
-                        </p>
-                        <div class="opportunity-footer">
-                            <div class="opportunity-price">ETB 8,000</div>
-                            <button class="btn btn-primary" onclick="applyOpportunity('Marketing Intern')">Apply Now</button>
+            <!-- Sidebar with Vertical Ad -->
+            <div class="sidebar">
+                <div class="ad-container" style="margin-top: 0; position: sticky; top: 100px;">
+                    <span class="ad-label">Sponsored</span>
+                    <!-- Vertical Ad -->
+                    <ins class="adsbygoogle ad-vertical"
+                         style="display:block"
+                         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                         data-ad-slot="5566778899"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                    <!-- Ethiopian Business Ads -->
+                    <div class="sidebar-widget">
+                        <h4 style="margin: 20px 0 10px 0; font-size: 16px; color: var(--dark);">Featured Employers</h4>
+                        <div style="background: var(--light); padding: 15px; border-radius: 8px; margin: 10px 0;">
+                            <p style="font-size: 14px; font-weight: 600; color: var(--primary);">Hire with ZewedJobs</p>
+                            <p style="font-size: 12px; color: #666; margin: 5px 0 10px 0;">Post jobs starting at ETB 499</p>
+                            <button class="btn btn-primary" style="width: 100%; margin-top: 5px; font-size: 12px; padding: 8px;" onclick="showModal('advertise')">
+                                Advertise Here
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1816,6 +2009,28 @@
         </div>
     </section>
 
+    <!-- Mid-Page Banner Ad -->
+    <div class="container">
+        <div class="ad-container section-ad">
+            <span class="ad-label">Advertisement</span>
+            <!-- Google AdSense Horizontal Banner -->
+            <ins class="adsbygoogle ad-horizontal"
+                 style="display:block"
+                 data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                 data-ad-slot="6677889900"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+            <!-- Fallback Ad -->
+            <div class="ad-fallback">
+                <p>Support Ethiopian businesses - Advertise with us!</p>
+                <p style="font-size: 12px; color: #666;">Contact: +251 92 485 8244 | ads@zewedjobs.com</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Trending Section -->
     <section class="trending-section">
         <div class="container">
@@ -1873,6 +2088,23 @@
             </div>
         </div>
     </section>
+
+    <!-- Banner Ad After Social Media -->
+    <div class="container">
+        <div class="ad-container">
+            <span class="ad-label">Sponsored Content</span>
+            <!-- Responsive Ad -->
+            <ins class="adsbygoogle ad-responsive"
+                 style="display:block"
+                 data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                 data-ad-slot="2233445566"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    </div>
 
     <!-- Upcoming Events -->
     <section class="events">
@@ -1980,6 +2212,42 @@
                         <p>ZewedJobs wins "Best Digital Job Platform" award at Ethiopian Innovation Awards 2024.</p>
                         <button class="btn btn-outline" onclick="readNews('Award')">Read More</button>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ethiopian Business Directory Ads -->
+    <section class="business-ads">
+        <div class="container">
+            <div class="section-title">
+                <h2>🇪🇹 <span>Featured</span> Ethiopian Businesses</h2>
+                <p>Support local companies and services</p>
+            </div>
+            
+            <div class="ad-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 30px;">
+                <!-- Direct Ad Spot 1 -->
+                <div class="direct-ad" style="background: white; padding: 20px; border-radius: 8px; text-align: center; border: 2px solid var(--primary-light);">
+                    <div style="width: 60px; height: 60px; background: var(--primary-light); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 24px;">🏦</div>
+                    <h4 style="margin-bottom: 10px;">Awash Bank</h4>
+                    <p style="font-size: 14px; color: #666; margin-bottom: 15px;">Career opportunities in banking & finance</p>
+                    <a href="#" class="btn btn-outline" style="font-size: 12px; padding: 8px 15px;">Visit Website</a>
+                </div>
+                
+                <!-- Direct Ad Spot 2 -->
+                <div class="direct-ad" style="background: white; padding: 20px; border-radius: 8px; text-align: center; border: 2px solid var(--primary-light);">
+                    <div style="width: 60px; height: 60px; background: var(--primary-light); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 24px;">✈️</div>
+                    <h4 style="margin-bottom: 10px;">Ethiopian Airlines</h4>
+                    <p style="font-size: 14px; color: #666; margin-bottom: 15px;">Join Africa's leading airline</p>
+                    <a href="#" class="btn btn-outline" style="font-size: 12px; padding: 8px 15px;">View Jobs</a>
+                </div>
+                
+                <!-- Ad Spot for Sale -->
+                <div class="ad-for-sale" style="background: linear-gradient(135deg, var(--primary-light), white); padding: 20px; border-radius: 8px; text-align: center; border: 2px dashed var(--primary); cursor: pointer;" onclick="showModal('advertise')">
+                    <div style="width: 60px; height: 60px; background: var(--primary); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">📢</div>
+                    <h4 style="margin-bottom: 10px; color: var(--primary);">Your Ad Here</h4>
+                    <p style="font-size: 14px; color: #666; margin-bottom: 15px;">Reach 50,000+ Ethiopian professionals</p>
+                    <button class="btn btn-primary" style="font-size: 12px; padding: 8px 15px;">Advertise Now</button>
                 </div>
             </div>
         </div>
@@ -2117,6 +2385,15 @@
                 </div>
             </div>
             
+            <!-- Footer Ad -->
+            <div class="ad-container" style="margin: 30px 0; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);">
+                <span class="ad-label" style="color: rgba(255, 255, 255, 0.7);">Advertising</span>
+                <p style="color: white; margin: 10px 0; font-size: 14px;">Partner with Ethiopia's #1 job platform</p>
+                <button class="btn btn-outline" style="border-color: white; color: white; font-size: 12px; padding: 8px 15px;" onclick="showModal('advertise')">
+                    Advertise with ZewedJobs
+                </button>
+            </div>
+            
             <div class="copyright">
                 © 2024 ZewedJobs. All rights reserved. | 
                 <a href="#" onclick="showPrivacyPolicy()">Privacy Policy</a> | 
@@ -2150,6 +2427,7 @@
                 this.initServiceWorker();
                 this.setupEventListeners();
                 this.checkAuthStatus();
+                this.initAdSystem();
             },
             
             // Mobile Menu
@@ -2345,6 +2623,51 @@
                             </button>
                         </div>
                     `;
+                } else if (type === 'advertise') {
+                    modalBody.innerHTML = `
+                        <h3>Advertise with ZewedJobs</h3>
+                        <p style="margin-bottom: 20px; color: #666;">Reach 50,000+ Ethiopian professionals. Choose your advertising package:</p>
+                        
+                        <div style="background: var(--primary-light); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            <h4 style="margin-bottom: 10px; color: var(--primary);">📢 Banner Advertising</h4>
+                            <ul style="padding-left: 20px; margin-bottom: 10px;">
+                                <li>Top banner: ETB 5,000/week</li>
+                                <li>Middle banner: ETB 3,500/week</li>
+                                <li>Sidebar banner: ETB 2,500/week</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="background: var(--primary-light); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            <h4 style="margin-bottom: 10px; color: var(--primary);">🏢 Featured Business Listing</h4>
+                            <ul style="padding-left: 20px; margin-bottom: 10px;">
+                                <li>Basic listing: ETB 1,500/month</li>
+                                <li>Premium listing: ETB 3,000/month</li>
+                                <li>Featured spot: ETB 5,000/month</li>
+                            </ul>
+                        </div>
+                        
+                        <input type="text" id="companyName" placeholder="Company Name" required>
+                        <input type="email" id="companyEmail" placeholder="Email Address" required>
+                        <input type="tel" id="companyPhone" placeholder="Phone Number" required>
+                        <select id="adPackage" style="margin-bottom: 20px;">
+                            <option value="">Select Advertising Package</option>
+                            <option value="top-banner">Top Banner (ETB 5,000/week)</option>
+                            <option value="middle-banner">Middle Banner (ETB 3,500/week)</option>
+                            <option value="sidebar-banner">Sidebar Banner (ETB 2,500/week)</option>
+                            <option value="basic-listing">Basic Listing (ETB 1,500/month)</option>
+                            <option value="premium-listing">Premium Listing (ETB 3,000/month)</option>
+                        </select>
+                        
+                        <button onclick="ZewedJobs.submitAdRequest()" class="btn btn-primary" style="width: 100%;">
+                            <i class="fas fa-paper-plane"></i> Submit Advertising Request
+                        </button>
+                        
+                        <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+                            <p style="font-size: 12px; color: #666;">Or contact us directly:</p>
+                            <p style="font-size: 14px; margin: 5px 0;"><i class="fas fa-phone"></i> +251 92 485 8244</p>
+                            <p style="font-size: 14px; margin: 5px 0;"><i class="fas fa-envelope"></i> ads@zewedjobs.com</p>
+                        </div>
+                    `;
                 }
                 
                 modal.classList.add('active');
@@ -2367,6 +2690,58 @@
             showForgotPassword() {
                 this.hideModal();
                 setTimeout(() => this.showModal('forgot'), 300);
+            },
+            
+            // Advertising System
+            initAdSystem() {
+                // Initialize Google AdSense
+                if (typeof adsbygoogle !== 'undefined') {
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                }
+                
+                // Set up fallback ads
+                this.setupFallbackAds();
+            },
+            
+            setupFallbackAds() {
+                // Check if AdSense ads loaded, otherwise show fallback
+                setTimeout(() => {
+                    const adContainers = document.querySelectorAll('.adsbygoogle');
+                    adContainers.forEach(container => {
+                        if (container.offsetHeight === 0) {
+                            const fallback = container.parentElement.querySelector('.ad-fallback');
+                            if (fallback) {
+                                fallback.style.display = 'block';
+                            }
+                        }
+                    });
+                }, 2000);
+            },
+            
+            submitAdRequest() {
+                const companyName = document.getElementById('companyName')?.value;
+                const companyEmail = document.getElementById('companyEmail')?.value;
+                const companyPhone = document.getElementById('companyPhone')?.value;
+                const adPackage = document.getElementById('adPackage')?.value;
+                
+                if (!companyName || !companyEmail || !companyPhone || !adPackage) {
+                    this.showNotification('Please fill in all fields', 'error');
+                    return;
+                }
+                
+                // Show loading
+                const button = document.querySelector('#modalBody .btn-primary');
+                const originalText = button.innerHTML;
+                button.innerHTML = '<div class="loading"></div>';
+                button.disabled = true;
+                
+                // Simulate API call
+                setTimeout(() => {
+                    this.hideModal();
+                    this.showNotification('✅ Advertising request submitted! We will contact you within 24 hours.', 'success');
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }, 1500);
             },
             
             // Authentication
